@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>The Big City</title>
+    <style>
+      canvas {
+        border: 1px solid #000000;
+        background-color: #ffffff;
+      }
+      button {
+        line-height: 40px;
+        font-weight: bold;
+        padding: 0 40px;
+        background: #04990d;
+        border: none;
+      }
+      food {
+        line-height: 40px;
+        padding: 10px 40px;
+        background: #ff0000;
+        border: none;
+      }
+      button:hover {background: #24b92d;}
+    </style>
+  </head>
+  <body onload="startGame()">
+    <p>Instructions.</p>
+    <div id = "output"></div>
+    <script>
+      var places = []
+      function startGame() {
+        screen.start();
+        places.push(new place("home", "src", 0, function(coins) {
+          //
+        }));
+        places.push(new place("store", "src", 0, function(coins) {
+          print("Click on a button to buy an item, some have side effects.");
+          water = document.createElement("food");
+          water.innerHTML = "Water: 1 coin";
+          water.addEventListener("click", function() {
+            coins -= 1;
+            player.hunger += 1;
+            player.health += .01;
+            print("water");
+            setTimeout(60000, function() {player.hunger -= 1;});
+          });
+          document.body.appendChild(water);
+          p = document.createElement("p");
+          document.body.appendChild(p);
+          candy = document.createElement("food");
+          candy.innerHTML = "Candy: 5 coins";
+          candy.addEventListener("click", function() {
+            coins -= 5;
+            player.hunger += 5;
+            player.health -= .1;
+            print("candy");
+            setTimeout(60000, function() {player.hunger -= 5;});
+          });
+          document.body.appendChild(candy);
+          p = document.createElement("p");
+          document.body.appendChild(p);
+          meal = document.createElement("food");
+          meal.innerHTML = "Meal: 50 coins";
+          meal.addEventListener("click", function() {
+            coins -= 50;
+            player.hunger += 20;
+            print("meal");
+          });
+          document.body.appendChild(meal);
+          p = document.createElement("p");
+          document.body.appendChild(p);
+          leave = document.createElement("food");
+          candy.innerHTML = "Leave";
+          candy.addEventListener("click", function() {
+            print("leave");
+          });
+          document.body.appendChild(leave);
+        }));
+        places.push(new place("auction", "src", 100, function(coins) {
+          print("You have", coins, "coins.");
+          print("Welcome to Leo's auction.");
+          print("Now entering the auction house.");
+          sleep(1000);
+          print("You can always type leave to leave the auction.");
+          num = 21;
+          while (true) {
+            item = [["pot", 2, 30, 5, 7, 160], ["car", 700, 1500, 100, 50, 25000], ["set of clothes", 2, 30, 3, 3, 120], ["set of fine silverware", 3, 15, 2, 3, 160], ["box of jewelry", 5, 50, 5, 15, 279], ["toy", 2, 7, 2, 1, 60], ["piece of furniture", 15, 75, 5, 25, 175], ["couple of books", 2, 10, 3, 1, 275], ["set of office supplies", 2, 30, 5, 5, 20], ["mattress", 10, 25, 5, 1, 275], ["phone", 20, 50, 5, 1, 700]];
+            item = item[randint(1, 11)];
+            print("The auctioned item is a " + item[0] + ".");
+            price = randint(item[1], item[2]);
+            print("The starting bid is", price, "dollars.");
+            sleep(1000);
+            while (true) {
+              print("The bidding increases by", item[3].toString(), "dollars.");
+              if (input("Type more to increase the bidding price or leave if you don't want to buy the item.", "int") == "leave") {
+                print("You are leaving the auction house.");
+                sleep(1000);
+                return coins;
+              } else {
+                sleep(1000);
+                price += item[3];
+                print("The price is now", price, "bucks.");
+                bob = randint(1, num);
+                if (bob < 2) {
+                  print("You won the auction!");
+                  sleep(1000);
+                  print("You decided to sell the item.");
+                  sleep(1000);
+                  real = randint(item[4], item[5]);
+                  print("The", item[0], "was worth", real, "dollars.");
+                  if (real < price) {
+                    print("Too bad, looks like you lost", price - real, "dollars.");
+                    coins -= price - real;
+                  }
+                  if (real == price) {print("Wow, looks like that", item[0], "was the exact same price as you got it as.");}
+                  if (real > price) {
+                    print("Nice, looks like you earned", real - price, "dollars.");
+                    coins += real - price;
+                  }
+                  return coins;
+                }
+                for (i = 0; i < randint(1, 5); i += 1) {
+                  price += item[3];
+                  print("The price is now", price, "dollars.");
+                  num -= 1;
+                  sleep(1000);
+                }
+                if (price > coins) {
+                  print("You don't have enough money.");
+                  return coins;
+                }
+                if (num < 2) {num = 1;}
+              }
+            }
+          }
+        }));
+        places.push(new place("casino", "src", 1000, function(coins) {
+            c = 100;
+            a = input("Welcome to the Casino. You have " + c.toString() + " dollars. We have an awesome selection of games for you to play. You can play the slot machine(type sm to play), the lottery(type lotto to play), roulette(type roulette to play), and blackjack(type blackjack to play). If you want to stop playing type end.", "str");
+            if (a == "sm") {
+              print("Play for 1 coin and a chance of winning 100 to 300 coins.");
+              n = [];
+              for (i = 0; i < 3; i += 1) {n.push(randint(1, 3));}
+              print("...");
+              for (i = 0; i < 5; i += 1) {sleep(1000);}
+              print("The numbers are", n[0], n[1], n[2].toString() + ".");
+              if (n[0] == n[1] && n[1] == n[2]) {
+                print("You won.");
+                w = randint(100, 300);
+                c += w;
+                print("You won", w, "dollars.");
+              } else {
+                print("You lose.");
+                c -= 1;
+              }
+            }
+            if (a == "blackjack") {
+              print("Play for 5 coins and a chance to win 25 coins.");
+              d = ["s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "sJ", "sQ", "sK", "sA", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "dJ", "dQ", "dK", "dA", "h2", "h3", "h4", "h5", "h6", "h7", "h8", "h9", "h10", "hJ", "hQ", "hK", "hA", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "cJ", "cQ", "cK", "cA", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "sJ", "sQ", "sK", "sA", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "dJ", "dQ", "dK", "dA", "h2", "h3", "h4", "h5", "h6", "h7", "h8", "h9", "h10", "hJ", "hQ", "hK", "hA", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "cJ", "cQ", "cK", "cA"];
+              sd = [];
+              for (i = 0; i < d.length; i += 1) {
+                ri = 0;
+                m = 0;
+                while (m < sd.length - 1) {
+                  m = 0;
+                  ri = randint(0, d.length - 1);
+                  for (i = 0; i < sd.length; i += 1) {
+                    if (sd[i] != d[ri]) {m = m + 1;}
+                  }
+                }
+                sd.push(d[ri]);
+              }
+              d = sd;
+              ca = d[0];
+              d[0] = d[d.length - 1];
+              d[d.length - 1] = ca;
+              p1 = [];
+              p2 = [];
+              [p1, d] = deal(p1, d, 2);
+              [p2, d] = deal(p2, d, 2);
+              p1ct = 0;
+              while (true) {
+                print("Your Cards: ");
+                for (i = 0; i < p1.length; i += 1) {print(p1[i]);}
+                print("Dealer's Card:", p2[0]);
+                if (input("Type more for more cards or end to end the game: ", "str") == "end") {
+                  ap = 0;
+                  for (i = 0; i < p1.length; i += 1) {
+                    if (isLetter(i.slice(1)) == false) {p1ct = p1ct + +i.slice(1);
+                    } else {
+                      if (i.slice(1) == "J" || i.slice(1) == "Q" || i.slice(1) == "K") {p1ct = p1ct + 10;
+                      } else {
+                        if (i.slice(1) == "A") {
+                          if (ap == 0) {ap = input("Ace Point Value(1 or 11).", "int");}
+                          p1ct += ap;
+                        }
+                      }
+                    }
+                  }
+                  break;
+                } else {[p1, d] = deal(p1, d, 1);}
+              }
+              if (p1ct > 21) {
+                print("You Lose. You got over 21 points.");
+                return c - 5;
+              }
+              while (true) {
+                p2p = [];
+                ac = 0;
+                for (i = 0; i < p2.length; i += 1) {
+                  if (isLetter(p2[i].slice(1)) == false) {p2p.push(Number.parseInt(p2[i].slice(1)));
+                  } else {
+                    if (p2[i].slice(1) == "J" || p2[i].slice(1) == "Q" || p2[i].slice(1) == "K") {p2p.push(10);
+                    } else {
+                      if (p2[i].slice(1) == "A") {
+                        ac += 1;
+                        p2p.push(111);
+                      }
+                    }
+                  }
+                }
+                t = 0;
+                for (i = 0; i < p2p.length; i += 1) {
+                  if (p2p[i] !== 111) {t += p2p[i];}
+                }
+                if (ac > 0) {
+                  if (t + ac * 11 > 21) {t += ac;
+                  } else {t += ac * 11;}
+                }
+                if (t < p1ct) {[p2, d] = deal(p2, d, 1);
+                } else {
+                  if (t > 21) {
+                    print("You Win! The dealer got", t, "points.");
+                    c += 25;
+                    break;
+                  } else {
+                    if (t > p1ct) {
+                      print("You Lose. The dealer got", t, "points.");
+                      c -= 5;
+                      break;
+                    } else {
+                      if (t == 21 && t == p1ct) {
+                        print("You Tied. The dealer got", t, "points.");
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            if (a == "lotto") {
+              q = randint(25000000, 1500000000);
+              print("Play for 2 dollars and mabye win", q, "dollars.");
+              rn = [];
+              pn = [];
+              print("Choose six numbers form 1 to 50 in the spaces below.");
+              for (i = 0; i < 6; i += 1) {
+                rn.push(randint(1, 50));
+                pn.push(input("Number " + (i + 1).toString() + ": ", "int"));
+              }
+              pn = sort(pn, []);
+              rn = sort(rn, []);
+              if (rn == pn) {
+                print("You won", q, "dollars.");
+                c += q;
+              } else {
+                print("You lose.");
+                c -= 2;
+              }
+            }
+            if (a == "roulette") {
+              do {d = input("How much money do you want to bet?", "int");}
+              while (d > c);
+              n = randint(1, 10);
+              if (input("Pick your number from 1 to 30.", "int") == n) {
+                print("You win.");
+                c += d;
+              } else {
+                print("You lose.");
+                print("The number was...");
+                sleep(1000);
+                print(n);
+                c -= d;
+              }
+            }
+            if (a == "end") {
+              print("Why did you press end. :(");
+              print("Ending in:");
+              for (i = 0; i < 3; i += 1) {
+                print(3 - i);
+                sleep(1000);
+              }
+              print("..... (beeeep)");
+            }
+            return c;
+        }));
+      }
+      var screen = {
+        canvas: document.createElement('canvas'),
+        start: function () {
+          this.canvas.width = 500;
+          this.canvas.height = 200;
+          this.context = this.canvas.getContext('2d');
+          document.body.insertBefore(this.canvas, document.body.childNodes[2]);
+          this.interval = setInterval(updateScreen, 20);
+          this.frameno = 0;
+          this.screeno = -1;
+          window.addEventListener('keydown', function (e) {
+            screen.keys = screen.keys || [];
+            screen.keys[e.keyCode] = true;
+          });
+          window.addEventListener('keyup', function (e) {
+            screen.keys[e.keyCode] = false;
+          });
+        },
+        clear: function () {
+          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+      };
+      var player = {
+        coins: 200,
+        hunger: 100,
+        health: 100,
+      };
+      function component(width, height, color, x, y, type) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.width = width;
+        this.height = height;
+        this.type = type;
+        if (this.type == 'image') {
+          this.image = new Image();
+          this.image.src = color;
+        }
+        this.update = function () {
+          ctx = screen.context;
+          if (this.type == 'text') {
+            ctx.font = this.width;
+            ctx.fillStyle = color;
+            ctx.fillText(this.height, this.x, this.y);
+          } else {
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+          }
+        };
+      };
+      function place(name, src, price, func) {
+        this.name = name;
+        this.src = src;
+        this.func = func;
+        this.price = price;
+        if (this.name != "home" && this.name != "restaurant" && this.name != "store") {this.open = false;
+        } else {this.open = true;}
+        this.comp = new component("30px Consolas", this.name, "black", 100, 50, "text");
+      };
+      function sleep(milliseconds) {
+        const date = Date.now();
+        do {currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+      };
+      function print(...value) {
+        for (i = 0; i < value.length; i += 1) {String(value[i]);}
+        value = value.join(" ");
+        div = document.getElementById("output");
+        text = document.createElement("p");
+        text.innerHTML = value;
+        div.appendChild(text);
+        text.scrollIntoView();
+        alert(value);
+      };
+      function input(print, type) {
+        output = prompt(print);
+        try {
+          if (type == "str") {return output.toString();
+          } else if (type == "int") {
+            if (isNaN(+output)) {throw "Not a number.";}
+          }
+        }
+        catch(err) {input(print, type);}
+      };
+      function deal(pd, d, cn) {
+        for (i = 0; i < cn; i += 1) {
+          j = 4 * i;
+          pd.push(d[j]);
+        }
+        nd = [];
+        for (i = 0; i < d.length_pj_a; i += 1) {
+          if (i > cn) {nd.push(d[i]);}
+        }
+        return [pd, nd];
+      };
+      function sort(values, svalues) {
+        if (values.length == 0) {return svalues;}
+        min = 10000000;
+        ind = 0;
+        for (i = 0; i < values.length; i += 1) {
+          if (values[i] < min) {
+            min = values[i];
+            ind = i;
+          }
+        }
+        delete values[ind];
+        svalues.push(min);
+        return sort(values, svalues);
+      };
+      const randint = (min, max) => (Math.floor(Math.random() * (max - min + 1) ) + min);
+      const isLetter = (chr) => (str.length === 1 && str.match(/[a-z]/i));
+      function updateScreen() {
+        if (screen.keys[37]) {
+          sleep(500);
+          screen.screeno -= 1;
+          if (screen.screeno < 0) {screen.screeno = 0;}
+        }
+        if (screen.keys[39]) {
+          sleep(500);
+          screen.screeno += 1;
+          if (screen.screeno > places.length - 1) {screen.screeno = places.length - 1;}
+        }
+        if (screen.keys[13]) {
+          sleep(500);
+          if (places[screen.screeno].open == true) {player.coins = places[screen.screeno].func(player.coins);
+          } else {print("I'm sorry, but this building is closed. Click on the button at the bottom of the building to buy and open it.");}
+        }
+        if (screen.frameno % 10000 == 0) {screen.screeno = 0;}
+        if (player.hunger <= 0) {player.health -= .01;}
+        if (player.health <= 0) {
+          new component("30px Consolas", "You Lost.", "black", 100, 50, "text").update();
+          return;
+        }
+        screen.clear();
+        try {document.getElementById("buy").remove();
+        } catch {}
+        if (places[screen.screeno].open == false) {
+          var button = document.createElement("button");
+          button.innerHTML = "Buy for " + String(places[screen.screeno].price);
+          button.setAttribute("id", "buy");
+          button.addEventListener("click", function() {
+            places[screen.screeno].open = true;
+            player.coins -= places[screen.screeno].price;
+          });
+          document.body.appendChild(button);
+        }
+        places[screen.screeno].comp.update();
+        screen.frameno += 1;
+        player.hunger -= .01;
+      };
+    </script>
+  </body>
+</html>
