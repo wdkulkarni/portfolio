@@ -1,0 +1,1 @@
+This is a text-based game where the player is spawned in a world where the floor is amde of ores. These ores are represented by letters, and the closer they get to Z, the longer they take to mine. By mining ores, the player can exchange them to get better pickaxes, allowing them to mine more ores faster, and eventually reach the end of the game.
